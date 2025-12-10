@@ -2,6 +2,7 @@ import { useState, useRef } from "react";
 
 function UploadForm() {
   const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,6 +31,7 @@ function UploadForm() {
     formData.append("file", file);
 
     try {
+      setUploading(true);
       const res = await fetch("https://ini8-be.onrender.com/documents/upload", {
         method: "POST",
         body: formData,
@@ -40,7 +42,7 @@ function UploadForm() {
       if (!res.ok) {
         alert(data.error || "Upload failed");
       } else {
-        alert("Upload successful 🎉");
+        alert("Upload successful");
 
         if (fileInputRef.current) {
           fileInputRef.current.value = "";
@@ -55,6 +57,8 @@ function UploadForm() {
       } else {
         alert("Upload error");
       }
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -66,8 +70,11 @@ function UploadForm() {
           accept="application/pdf"
           onChange={handleFileChange}
           ref={fileInputRef}
+          disabled={uploading}
         />
-        <button type="submit">Upload PDF</button>
+        <button type="submit" disabled={uploading}>
+          {uploading ? "Uploading..." : "Upload PDF"}
+        </button>
       </form>
     </div>
   );
