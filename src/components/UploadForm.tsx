@@ -1,14 +1,16 @@
 import { useState, useRef } from "react";
 
 function UploadForm() {
-  const [file, setFile] = useState(null);
-  const fileInputRef = useRef(null);
+  const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleFileChange = (e) => {
-    setFile(e.target.files[0]);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0]);
+    }
   };
 
-  const handleUpload = async (e) => {
+  const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!file) {
@@ -38,17 +40,21 @@ function UploadForm() {
       if (!res.ok) {
         alert(data.error || "Upload failed");
       } else {
-        alert("Upload successful"); // ALERT ADDED ✔
+        alert("Upload successful 🎉");
 
-        // reset file input
-        fileInputRef.current.value = "";
+        if (fileInputRef.current) {
+          fileInputRef.current.value = "";
+        }
         setFile(null);
 
-        // Refresh list
         window.dispatchEvent(new Event("documentsUpdated"));
       }
-    } catch (err) {
-      alert("Upload error: " + err.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        alert("Upload error: " + err.message);
+      } else {
+        alert("Upload error");
+      }
     }
   };
 

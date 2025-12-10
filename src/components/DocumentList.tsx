@@ -1,26 +1,37 @@
 import { useEffect, useState } from "react";
 
+type DocType = {
+  id: number;
+  filename: string;
+  filesize: number;
+  created_at: string;
+};
+
 function DocumentList() {
-  const [docs, setDocs] = useState([]);
+  const [docs, setDocs] = useState<DocType[]>([]);
 
   const fetchDocs = async () => {
     try {
       const res = await fetch("https://ini8-be.onrender.com/documents");
-      const data = await res.json();
+      const data: DocType[] = await res.json();
       setDocs(data);
-    } catch (err) {
+    } catch {
       alert("Failed to fetch documents");
     }
   };
 
   useEffect(() => {
-    fetchDocs();
+    const loadDocs = async () => {
+      await fetchDocs();
+    };
+
+    loadDocs();
     const handler = () => fetchDocs();
     window.addEventListener("documentsUpdated", handler);
     return () => window.removeEventListener("documentsUpdated", handler);
   }, []);
 
-  const handleDownload = (id, filename) => {
+  const handleDownload = (id: number, filename: string) => {
     const url = `https://ini8-be.onrender.com/documents/${id}`;
     const a = document.createElement("a");
     a.href = url;
@@ -30,13 +41,14 @@ function DocumentList() {
     a.remove();
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: number) => {
     if (!window.confirm("Delete this document?")) return;
 
     try {
       const res = await fetch(`https://ini8-be.onrender.com/documents/${id}`, {
         method: "DELETE",
       });
+
       const data = await res.json();
 
       if (res.ok) {
@@ -45,7 +57,7 @@ function DocumentList() {
       } else {
         alert(data.error || "Delete failed");
       }
-    } catch (err) {
+    } catch {
       alert("Delete error");
     }
   };
@@ -53,9 +65,10 @@ function DocumentList() {
   return (
     <div className="table-container">
       <h2>Uploaded Documents</h2>
+
       <table
-        border="1"
-        cellPadding="8"
+        border={1}
+        cellPadding={8}
         style={{ width: "100%", borderCollapse: "collapse" }}
       >
         <thead>
@@ -66,12 +79,14 @@ function DocumentList() {
             <th>Actions</th>
           </tr>
         </thead>
+
         <tbody>
           {docs.length === 0 && (
             <tr>
-              <td colSpan="4">No documents found.</td>
+              <td colSpan={4}>No documents found.</td>
             </tr>
           )}
+
           {docs.map((doc) => (
             <tr key={doc.id}>
               <td>{doc.filename}</td>
