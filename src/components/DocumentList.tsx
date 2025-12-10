@@ -5,7 +5,7 @@ function DocumentList() {
 
   const fetchDocs = async () => {
     try {
-      const res = await fetch("http://localhost:5000/documents");
+      const res = await fetch("https://ini8-be.onrender.com/documents");
       const data = await res.json();
       setDocs(data);
     } catch (err) {
@@ -21,7 +21,7 @@ function DocumentList() {
   }, []);
 
   const handleDownload = (id, filename) => {
-    const url = `http://localhost:5000/documents/${id}`;
+    const url = `https://ini8-be.onrender.com/documents/${id}`;
     const a = document.createElement("a");
     a.href = url;
     a.download = filename;
@@ -34,7 +34,7 @@ function DocumentList() {
     if (!window.confirm("Delete this document?")) return;
 
     try {
-      const res = await fetch(`http://localhost:5000/documents/${id}`, {
+      const res = await fetch(`https://ini8-be.onrender.com/documents/${id}`, {
         method: "DELETE",
       });
       const data = await res.json();

@@ -28,7 +28,7 @@ function UploadForm() {
     formData.append("file", file);
 
     try {
-      const res = await fetch("http://localhost:5000/documents/upload", {
+      const res = await fetch("https://ini8-be.onrender.com/documents/upload", {
         method: "POST",
         body: formData,
       });
